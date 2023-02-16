@@ -1,0 +1,71 @@
+Package Name,Ad Library,Ad-Show-Method
+com.adcolony,AdColony,show
+com.jirbo.adcolony,AdColony,show
+com.adincube,AdinCube,show
+com.admarvel,AdMarvel,show
+com.admob,Admob,show
+com.adserv,AdServ,show
+com.adtech,AdTech,show
+com.aduwant,AdUWant,show
+com.adwhirl,AdWhirl,show
+com.aerserv,AerServ,show
+com.altamob,Altamob,show
+com.amazon.device.ads,Amazon Mobile Ad,showAd
+com.amobee,Amobee,show
+com.aol,AOL,show
+com.appbrain,Appbrain,show
+com.appintop,AppInTop,showInterstitialAd
+com.applovin,Applovin,show
+com.appnext,AppNext,showAd
+com.appodeal,Appodeal,show
+com.avocarrot,Avocarrot,showAd
+com.bee7,Bee7,show
+com.calldorado,Calldorado Mobile SDK,showStandAloneOptin
+com.chartboost,Chartboost,show
+com.cmcm,CMAdSDK,showAd
+com.doapps,DoApp,show
+com.duapps,DU Ads platform,show
+com.facebook.ads,Facebook Audience Network,show
+com.flurry.android.ads,Flurry,show
+tv.freewheel,FreeWheel,show
+com.fyber,Fyber,show
+com.google.ads,Google,show
+com.google.android.gms.ads,Google,show
+com.google.android.gms.internal.ads,Google,
+com.google.android.ads,Google,
+com.heyzap,HeyZap,show
+com.inmobi,InMobi,show
+com.inneractive,Inneractive,showAd
+com.integralads,Integral Ad,showAd
+com.ironsource,ironSource,showAd
+com.jumptap,JumpTap,showAsPopup
+tv.justad,JustAd,show
+com.xinmei,Kuala Ad,show
+com.loopme,Loopme,show
+com.medialets,Medialets,show
+com.millennialmedia,Millennialmedia,show
+com.mobfox,MobFox,show
+com.mobimagic,MobiMagic,adShow
+com.mobvista,MobVista,show
+com.mopub,MoPub,showVideo
+com.mopub,MoPub,show
+com.my.target,myTarget,handleBannersShow
+com.qihoo,Qihoo 360,show
+com.revmob,RevMob,showVideo
+com.revmob,RevMob,show
+com.rovio,Rovio,show
+com.smaato,Smaato,show
+com.smartadserver,Smart AdServer,showAd
+com.smartcross,SmartCross,showAd
+com.sponsorpay,Sponorpay,showBanner
+com.startapp,StartApp,showAd
+com.supersonic,Supersonic,showAd
+com.tapdaq,Tapdaq,loadMediatedNativeAd
+com.tapit,Tapit,showInterstitial
+com.tapit,Tapit,showAlertAd
+com.tapit,Tapit,showOffers
+com.tapjoy,Tapjoy,showFullScreenAd
+com.unity3d.ads,Unity3d Ads,show
+com.unity3d.services.ads,Unity3d Ads,
+com.vervewireless,Verve Wireless,show
+com.vungle,Vungle,playAd
