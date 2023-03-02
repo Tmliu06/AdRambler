@@ -5,7 +5,7 @@ from .utils import get_first_level_dirs, read_known_ad_libs
 
 class Analyser:
 
-    def __init__(self, app_dir, output_dir, traffic_dir, start_point=None, single_analysis=False):
+    def __init__(self, app_dir, output_dir, traffic_dir, OUTPUT_DIR_CONTENT, start_point=None, single_analysis=False):
 
         self.app_dir = app_dir
         self.output_dir = output_dir
@@ -26,7 +26,7 @@ class Analyser:
             if should_start:
                 if apk_file.endswith(".apk"):
                     print(apk_file[:-4])
-                    AdGuard(self, apk_file[:-4])
+                    AdGuard(self, apk_file[:-4], OUTPUT_DIR_CONTENT)
 
                     if single_analysis:
                         break

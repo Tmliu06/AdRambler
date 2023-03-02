@@ -8,18 +8,20 @@ from shutil import copyfile
 from .utils import get_ignored_pkgs, read_xposed_log, mkdir
 import xml.dom.minidom
 
-OUTPUT_DIR_CONTENT = 'D:\\workplace\\adguard_output\\'
-
 
 class AdGuard:
 
-    def __init__(self, analyser, apk_name):
+    def __init__(self, analyser, apk_name, OUTPUT_DIR_CONTENT):
 
         self.analyser = analyser
         self.xposed_infos = []
         self.fiddler_infos = []
         self.states = {}
         self.traffic_dir = None
+        self.OUTPUT_DIR_CONTENT = OUTPUT_DIR_CONTENT
+        self.ad_load_dir = mkdir(OUTPUT_DIR_CONTENT, 'ad_load')
+        self.ad_click_dir = mkdir(OUTPUT_DIR_CONTENT, 'ad_click')
+        self.apk_name = apk_name
 
         for ip, pkgs in analyser.ip_pkgs.items():
             if apk_name in pkgs:
@@ -186,7 +188,7 @@ class AdGuard:
                         elif i != len(clicks) - 2:
                             if click['sid'] < fiddler_info['sid'] <= clicks[i + 2]['sid']:
                                 ad_click_urls.append(fiddler_info)
-                        elif  click['sid'] < fiddler_info['sid']:
+                        elif click['sid'] < fiddler_info['sid']:
                             ad_click_urls.append(fiddler_info)
                     except:
                         pass
@@ -207,17 +209,20 @@ class AdGuard:
 
         for info in ad_click['ad_click_urls']:
 
-            if "android.clients.google.com" in info['url']:
-                app = ""
-                if 'doc' in info['url']:
-                    try:
-                        app = info['url'].split('doc=')[1].split('&')[0]
-                    except:
-                        pass
-                if 'id%3D' in info['url']:
-                    app = info['url'].split('id%3D')[1].split('%')[0]
-                if app and app != 'com.google.android.play.games' and app != self.pkg:
-                    gplay_pkgs.add(app)
+            if "play.google.com" in info['url']:
+                gplay_pkgs.add(info['url'])
+
+            # if "android.clients.google.com" in info['url']:
+            #     app = ""
+            #     if 'doc' in info['url']:
+            #         try:
+            #             app = info['url'].split('doc=')[1].split('&')[0]
+            #         except:
+            #             pass
+            #     if 'id%3D' in info['url']:
+            #         app = info['url'].split('id%3D')[1].split('%')[0]
+            #     if app and app != 'com.google.android.play.games' and app != self.pkg:
+            #         gplay_pkgs.add(app)
 
             if 'X-Requested-With' in info.keys():
                 apk = info['X-Requested-With']
@@ -254,8 +259,6 @@ class AdGuard:
         ad_click['ad_click_contents_verbose'] = ad_click_contents_verbose
 
     def get_ad_files(self, ad_click):
-        ad_load_dir = mkdir(OUTPUT_DIR_CONTENT, 'ad_load')
-        ad_click_dir = mkdir(OUTPUT_DIR_CONTENT, 'ad_click')
         ad_load_files = []
         ad_click_files = []
 
@@ -279,8 +282,8 @@ class AdGuard:
                             #     # TODO:: dump base64 images within html files
                             #     pass
                             if file_type in ['jpg', 'jpeg', 'gif', 'png', 'webp', 'html', 'zip', 'mp4']:
-                                dst = os.path.join(ad_load_dir, file_type, self.pkg + '-' + str(sid) + '.' + file_type)
-                                mkdir(ad_load_dir, file_type)
+                                dst = os.path.join(self.ad_load_dir, file_type, self.pkg + '-' + str(sid) + '.' + file_type)
+                                mkdir(self.ad_load_dir, file_type)
                                 copyfile(src, dst)
                                 ad_load_files.append(self.pkg + '-' + str(sid) + '.' + file_type)
 
@@ -298,12 +301,12 @@ class AdGuard:
                                 file_type = info['Content-Type']
                         if file_type:
                             if file_type in ['html']:
-                                dst = os.path.join(ad_click_dir, file_type, self.pkg + '-' + str(sid) + '.' + file_type)
-                                mkdir(ad_click_dir, file_type)
+                                dst = os.path.join(self.ad_click_dir, file_type, self.pkg + '-' + str(sid) + '.' + file_type)
+                                mkdir(self.ad_click_dir, file_type)
                                 copyfile(src, dst)
                                 ad_click_files.append(self.pkg + '-' + str(sid) + '.' + file_type)
 
-            with open(os.path.join(os.path.dirname(OUTPUT_DIR_CONTENT), 'ad_clicks_info.txt'), 'a+') as f:
+            with open(os.path.join(os.path.dirname(self.OUTPUT_DIR_CONTENT), 'ad_clicks_info.txt'), 'a+') as f:
                 result = {'pkg': self.pkg, 'ad_feature': ad_click['ad_feature'],
                           'sid': ad_click['sid'], 'state': ad_click['state'], 'view': ad_click['view'],
                           'ad_load_files': ad_load_files, 'ad_click_files': ad_click_files,
@@ -334,3 +337,31 @@ class AdGuard:
                             states[state_info["state_str"]] = state_info
 
         self.states = states
+        self.get_possible_ad_views()
+
+    def get_possible_ad_views(self):
+
+        ad_views = {}
+        ad_libs = {}
+
+        for state_str in self.states:
+            state_info = self.states[state_str]
+            views = state_info["views"]
+            possible_ad_views_within_state = []
+            for view in views:
+                current_ad_lib = ""
+                for known_ad_lib in self.analyser.known_ad_libs:
+                    if view["package"].startswith(known_ad_lib):
+                        ad_libs[known_ad_lib] = 1
+                        current_ad_lib = known_ad_lib
+                        break
+                if current_ad_lib:  # is a possible ad view
+                    possible_ad_views_within_state.append(view)
+            if possible_ad_views_within_state:
+                ad_views[state_info["state_str"]] = possible_ad_views_within_state
+
+        if ad_libs:
+            print(ad_libs)
+            with open(os.path.join(os.path.dirname(self.OUTPUT_DIR_CONTENT), 'ad_view_info.txt'), 'a+') as f:
+                result = {'apk_name': self.apk_name, 'pkg': self.pkg, 'ad_libs': ad_libs, 'ad_views': ad_views}
+                f.write(json.dumps(result) + '\n')
