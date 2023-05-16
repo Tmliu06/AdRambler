@@ -1,3 +1,7 @@
+# New (20230516): 
+
+I recently got a new Google Pixel 4 running Android 11 as testing device, it turns out that our ad view identification approach descirbed in the paper is not compatiable with this device. Luckily, I have found an alternative solution that requires adb only. I will polish this workaround and promptly update this repository with the new implementation. Stay tuned!
+
 # AdBot
 
 ## About
